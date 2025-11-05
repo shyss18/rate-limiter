@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/RateLimiter.Api/RateLimiter.Api.csproj" Id="0458ffa2-7e0b-4139-9bd1-590f78f21aeb" />
+    <Project Path="src/RateLimiter.Application/RateLimiter.Application.csproj" />
+    <Project Path="src/RateLimiter.Domain/RateLimiter.Domain.csproj" />
+    <Project Path="src/RateLimiter.Infrastructure/RateLimiter.Infrastructure.csproj" />
+  </Folder>
+</Solution>

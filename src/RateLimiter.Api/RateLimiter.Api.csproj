@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+	 <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\src\RateLimiter.Application\RateLimiter.Application.csproj" />
+    <ProjectReference Include="..\src\RateLimiter.Domain\RateLimiter.Domain.csproj" />
+    <ProjectReference Include="..\src\RateLimiter.Infrastructure\RateLimiter.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
