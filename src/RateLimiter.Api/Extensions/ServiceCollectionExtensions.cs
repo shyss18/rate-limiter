@@ -1,8 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using RateLimiter.Application;
 using RateLimiter.Infrastructure;
 using RateLimiter.Infrastructure.Options;
 
-namespace RateLimiter.Api;
+namespace RateLimiter.Api.Extensions;
 
 public static class ServiceCollectionExtensions
 {
@@ -14,6 +15,7 @@ public static class ServiceCollectionExtensions
 
         action(options);
 
+        services.AddApplication();
         services.AddInfrastructure(options);
 
         return services;

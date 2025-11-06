@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Controllers;
+using RateLimiter.Api.Attributes;
 
 namespace RateLimiter.Api.Extensions;
 
@@ -12,13 +12,12 @@ internal static class HttpContextExtensions
         var endpoint = context.GetEndpoint();
         if (endpoint != null)
         {
-            var controllerActionDescriptor = endpoint.Metadata.GetMetadata<ControllerActionDescriptor>();
-            if (controllerActionDescriptor != null)
-            {
-                var controllerName = controllerActionDescriptor.ControllerName;
-                var actionName = controllerActionDescriptor.ActionName;
+            var domainAttribute = endpoint.Metadata.GetMetadata<DomainAttribute>();
+            var actionAttribute = endpoint.Metadata.GetMetadata<ActionAttribute>();
 
-                return (controllerName, actionName);
+            if (domainAttribute != null && actionAttribute != null)
+            {
+                return (domainAttribute.Domain, actionAttribute.Action);
             }
         }
 

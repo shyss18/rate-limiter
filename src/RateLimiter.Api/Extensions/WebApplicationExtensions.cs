@@ -5,7 +5,7 @@ namespace RateLimiter.Api.Extensions;
 
 public static class WebApplicationExtensions
 {
-    public static IApplicationBuilder UseRateLimiter(this IApplicationBuilder app)
+    public static IApplicationBuilder UseRateLimiterMiddleware(this IApplicationBuilder app)
     {
         app.UseMiddleware<RateLimitMiddleware>();
 
