@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/examples/">
+    <Project Path="examples/RateLimiter.Example.Api/RateLimiter.Example.Api.csproj" Id="b453a50c-4529-48fb-9450-d6d7bdb4c309" />
+  </Folder>
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
   </Folder>
