@@ -37,20 +37,18 @@ internal class RateLimiter(
             actionRule.Description.Unit,
             actionRule.Description.RequestsPerUnit);
 
-        var currentTime = DateTime.Now.TimeOfDay;
+        var currentTime = DateTimeOffset.Now;
         var unitsTimeSpan = actionRule.Description.GetTimeSpanFromUnits();
 
         var response = await cacheRepository.GetUserLimitsAsync(new GetUserLimitsRequest
         {
             UserId = request.UserId,
             CurrentTime = currentTime,
-            TimeToLive = currentTime.Add(unitsTimeSpan),
-            LowBoundTime = currentTime.Add(-unitsTimeSpan),
-            HighBoundTime = currentTime,
+            UnitsTimeSpan = unitsTimeSpan
         });
 
-        var shouldLimit = response.Count > actionRule.Description.RequestsPerUnit;
-        var waitTimeSpan = response.LeastRequestTime.Add(unitsTimeSpan) - currentTime;
+        var shouldLimit = response.Count >= actionRule.Description.RequestsPerUnit;
+        var waitTimeSpan = shouldLimit ? response.LeastRequestTime.Add(unitsTimeSpan) - currentTime : TimeSpan.Zero;
 
         logger.LogInformation("Received response user limits, count = {userLimitsCount}, leastRequestTime = {LeastRequestTime}, shouldLimit = {shouldLimit}, waitInSeconds = {waitInSeconds}",
             response.Count,

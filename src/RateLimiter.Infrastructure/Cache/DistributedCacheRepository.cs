@@ -6,35 +6,45 @@ namespace RateLimiter.Infrastructure.Cache;
 
 internal class DistributedCacheRepository(IConnectionMultiplexer connection) : IDistributedCacheRepository
 {
+    private const double MinScore = 0;
+    private const long MinItemIndex = 0;
+    private const long MaxItemIndex = -1; // Represents the last item
+
     public async Task<GetUserLimitsResponse> GetUserLimitsAsync(GetUserLimitsRequest request)
     {
+        var currentTimeInSeconds = request.CurrentTime.ToUnixTimeSeconds();
+        var maxScore = request.CurrentTime.Add(-request.UnitsTimeSpan).ToUnixTimeSeconds();
+
         var redis = connection.GetDatabase();
 
         var transaction = redis.CreateTransaction();
 
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
-        transaction.SortedSetRemoveRangeByScoreAsync(request.UserId, request.LowBoundTime.TotalSeconds, request.HighBoundTime.TotalSeconds);
-        var usersRequests = transaction.SortedSetRangeByRankAsync(request.UserId, 0, -1);
+        transaction.SortedSetRemoveRangeByScoreAsync(request.UserId, MinScore, maxScore, Exclude.None);
+        var usersRequestsTasks = transaction.SortedSetRangeByRankAsync(request.UserId, MinItemIndex, MaxItemIndex);
 
         transaction.SortedSetAddAsync(
             request.UserId,
             new RedisValue(request.CurrentTime.ToString()),
-            request.CurrentTime.TotalSeconds);
+            currentTimeInSeconds);
 
-        transaction.KeyExpireAsync(request.UserId, request.TimeToLive);
+        transaction.KeyExpireAsync(request.UserId, request.UnitsTimeSpan);
 
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
         await transaction.ExecuteAsync();
 
-        var userRequestsCount = usersRequests.Result.Length;
-        var lastRequestTime = usersRequests.Result.FirstOrDefault();
+        // This call doesn't block anything since result is already represent
+        var userRequests = usersRequestsTasks.Result;
+
+        var userRequestsCount = userRequests.Length;
+        var leastRequestTime = userRequests.FirstOrDefault();
 
         return new()
         {
             Count = userRequestsCount,
-            LeastRequestTime = lastRequestTime.HasValue ? TimeSpan.Parse(lastRequestTime!) : DateTime.Now.TimeOfDay,
+            LeastRequestTime = leastRequestTime.HasValue ? DateTimeOffset.Parse(leastRequestTime!) : request.CurrentTime,
         };
     }
 }

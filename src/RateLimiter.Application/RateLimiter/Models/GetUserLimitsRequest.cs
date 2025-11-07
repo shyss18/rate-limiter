@@ -4,11 +4,7 @@ public class GetUserLimitsRequest
 {
     public required string UserId { get; set; }
 
-    public TimeSpan HighBoundTime { get; set; }
+    public DateTimeOffset CurrentTime { get; set; }
 
-    public TimeSpan LowBoundTime { get; set; }
-
-    public TimeSpan CurrentTime { get; set; }
-
-    public TimeSpan TimeToLive { get; set; }
+    public TimeSpan UnitsTimeSpan { get; set; }
 }

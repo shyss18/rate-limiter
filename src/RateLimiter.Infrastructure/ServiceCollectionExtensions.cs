@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using RateLimiter.Application.Cache.Interfaces;
 using RateLimiter.Application.LimiterRules.Interfaces;
 using RateLimiter.Infrastructure.Cache;
@@ -10,7 +11,10 @@ namespace RateLimiter.Infrastructure;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, RateLimiterOptions rateLimiterOptions)
+    public static IServiceCollection AddInfrastructure(
+        this IServiceCollection services,
+        IConfiguration configuration,
+        RateLimiterOptions rateLimiterOptions)
     {
         services.AddSingleton<IConnectionMultiplexer>(sp => ConnectionMultiplexer.Connect(rateLimiterOptions.RedisConnection));
 
@@ -19,7 +23,7 @@ public static class ServiceCollectionExtensions
         if (rateLimiterOptions.UseConfigurationOptions)
         {
             services.AddScoped<ILimiterRulesRepository, OptionsLimiterRulesRepository>();
-            services.AddOptions<LimitRulesOptions>(nameof(LimitRulesOptions));
+            services.Configure<LimitRulesOptions>(configuration.GetSection(nameof(LimitRulesOptions)));
         }
 
         return services;

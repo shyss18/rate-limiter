@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using RateLimiter.Application;
 using RateLimiter.Infrastructure;
 using RateLimiter.Infrastructure.Options;
@@ -9,6 +10,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddRateLimiter(
         this IServiceCollection services,
+        IConfiguration configuration,
         Action<RateLimiterOptions> action)
     {
         var options = new RateLimiterOptions();
@@ -16,7 +18,7 @@ public static class ServiceCollectionExtensions
         action(options);
 
         services.AddApplication();
-        services.AddInfrastructure(options);
+        services.AddInfrastructure(configuration, options);
 
         return services;
     }
